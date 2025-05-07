@@ -9,9 +9,11 @@ import ngrok from "@ngrok/ngrok";
 import { ProjetoController } from "./controllers/Projeto.Controller";
 import { InMemoryProjetoRepository } from "./repository/InMemoryProjetoRepository";
 import { projetoRoutes } from "./routes/projeto.route";
+import { PrismaUserRepository } from "./repository/prisma.User.Repository";
 
 async function bootstrap(): Promise<void> {
-  const repo = new InMemoryUserRepository();
+  // const repo = new InMemoryUserRepository();
+  const repo = new PrismaUserRepository();
   const service = new UserService(repo);
   const controller = new UserController(service);
 
@@ -72,7 +74,6 @@ async function bootstrap(): Promise<void> {
   });
 }
 
-// Trata erros de inicialização
 bootstrap().catch((err) => {
   console.error("❌ Failed to start server:", err);
   process.exit(1);

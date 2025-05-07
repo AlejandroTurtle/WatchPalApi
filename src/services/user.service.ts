@@ -1,9 +1,9 @@
-import User from "../models/user.model";
 import { BaseRepository } from "../repository/generic.repository";
 import { v4 as uuidv4 } from "uuid";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import dotenv from "dotenv";
+import { User } from "@prisma/client";
 
 dotenv.config();
 
@@ -24,6 +24,12 @@ function getDataHoraLocal(): Date {
 export default class UserService {
   constructor(private repo: BaseRepository<User>) {}
 
+  private generateToken(user: User): string {
+    return jwt.sign({ id: user.id, email: user.email }, JWT_SECRET!, {
+      expiresIn: JWT_EXPIRES_IN,
+    } as jwt.SignOptions);
+  }
+
   async login(
     email: string,
     password: string
@@ -40,36 +46,40 @@ export default class UserService {
       return { user: null, token: "" };
     }
 
-    const token = jwt.sign({ id: user.id, email: user.email }, JWT_SECRET!, {
-      expiresIn: JWT_EXPIRES_IN,
-    } as jwt.SignOptions);
+    const token = this.generateToken(user);
 
     return { user, token };
   }
 
-  async create(data: Omit<User, "id">): Promise<User> {
+  async create(data: Omit<User, "id">): Promise<{ user: User; token: string }> {
     // Validação básica
-    if (!data.name || !data.email || !data.password) {
+    if (!data.nome || !data.email || !data.password) {
       throw new Error("Todos os campos são obrigatórios");
     }
 
-    if (!User.validateRaw(data.name, data.email, data.password)) {
-      throw new Error("Dados do usuário inválidos");
+    // Verifica se o email ja existe
+    const users = await this.repo.findAll();
+    const userExists = users.find((user) => user.email === data.email);
+    if (userExists) {
+      throw new Error("Já existe um usuario cadastrado com esse email");
     }
 
     // Hash da senha
     const hashedPassword = await bcrypt.hash(data.password, 10);
 
-    const user = new User(
-      uuidv4(),
-      data.name,
-      data.email,
-      hashedPassword,
-      getDataHoraLocal(),
-      getDataHoraLocal()
-    );
+    const user = await this.repo.create({
+      id: uuidv4(),
+      nome: data.nome,
+      email: data.email,
+      password: hashedPassword,
+      createdAt: getDataHoraLocal(),
+      updatedAt: getDataHoraLocal(),
+      celular: data.celular,
+      foto: data.foto,
+    });
 
-    return this.repo.create(user);
+    const token = this.generateToken(user);
+    return { user, token };
   }
 
   async findAll(): Promise<User[]> {
@@ -102,6 +112,11 @@ export default class UserService {
 
   async delete(id: string): Promise<boolean> {
     await this.repo.delete(id);
+    return true;
+  }
+
+  async deleteAll(): Promise<boolean> {
+    await this.repo.deleteAll();
     return true;
   }
 }

@@ -1,0 +1,58 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        String   @id @default(uuid())
+  nome      String
+  email     String   @unique
+  password  String
+  celular   String?
+  foto      String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  watchedEpisodes WatchedEpisode[]
+  completedSeries CompletedSeries[]
+  favorites       Favorite[]
+}
+
+model Favorite {
+  id         String   @id @default(uuid())
+  user       User     @relation(fields: [userId], references: [id])
+  userId     String
+  titulo     String
+  tituloId   Int
+  numberEpisodes Int?
+  numberSeasons  Int?
+
+  @@unique([userId, tituloId])
+}
+
+model CompletedSeries {
+  id        String   @id @default(uuid())
+  user      User     @relation(fields: [userId], references: [id])
+  userId    String
+  tituloId  Int      
+  completedAt DateTime @default(now())
+
+  @@unique([userId, tituloId]) 
+}
+
+model WatchedEpisode {
+  id         String   @id @default(uuid())
+  user       User     @relation(fields: [userId], references: [id])
+  userId     String
+  tituloId   Int      
+  season     Int
+  episode    Int
+  duration   Int      
+  watchedAt  DateTime @default(now())
+
+  @@unique([userId, tituloId, season, episode])
+}
