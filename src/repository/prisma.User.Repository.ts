@@ -28,4 +28,8 @@ export class PrismaUserRepository implements BaseRepository<User> {
     await prisma.user.deleteMany();
     return true;
   }
+
+  async findByEmail(email: string): Promise<User | null> {
+    return prisma.user.findUnique({ where: { email } });
+  }
 }

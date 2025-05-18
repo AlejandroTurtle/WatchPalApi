@@ -20,6 +20,7 @@ model User {
   watchedEpisodes WatchedEpisode[]
   completedSeries CompletedSeries[]
   favorites       Favorite[]
+  passwordResets  PasswordReset[]
 }
 
 model Favorite {
@@ -55,4 +56,13 @@ model WatchedEpisode {
   watchedAt  DateTime @default(now())
 
   @@unique([userId, tituloId, season, episode])
+}
+
+model PasswordReset {
+  id         String   @id @default(uuid())
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId     String
+  code       String
+  createdAt  DateTime @default(now())
+  expiresAt  DateTime
 }

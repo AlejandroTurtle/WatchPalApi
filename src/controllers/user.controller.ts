@@ -131,4 +131,96 @@ export default class UserController {
         .json({ success: false, error: "Erro ao deletar usuários" });
     }
   }
+
+  async sendEmailRecoverPassword(req: Request, res: Response) {
+    try {
+      const { email } = req.body;
+      const success = await this.service.sendEmailRecoverPassword(email);
+      if (!success) {
+        return res
+          .status(404)
+          .json({ success: false, error: "E-mail não encontrado" });
+      }
+      res
+        .status(200)
+        .json({ success: true, message: "E-mail enviado com sucesso" });
+    } catch (error: any) {
+      res.status(500).json({
+        success: false,
+        error:
+          "Erro ao enviar e-mail, verifique o e-mail informado e tente novamente",
+      });
+    }
+  }
+
+  async recoverPassword(req: Request, res: Response) {
+    try {
+      const { code, password } = req.body;
+      const success = await this.service.verifyResetCode(code, password);
+      if (!success) {
+        return res
+          .status(404)
+          .json({ success: false, error: "Código inválido ou expirado" });
+      }
+      res
+        .status(200)
+        .json({ success: true, message: "Senha alterada com sucesso" });
+    } catch (error: any) {
+      res
+        .status(500)
+        .json({ success: false, error: "Erro ao recuperar senha" });
+    }
+  }
+
+  async resendCode(req: Request, res: Response) {
+    try {
+      const { email } = req.body;
+      const success = await this.service.resendCode(email);
+      if (!success) {
+        return res
+          .status(404)
+          .json({ success: false, error: "E-mail não encontrado" });
+      }
+      res
+        .status(200)
+        .json({ success: true, message: "Código reenviado com sucesso" });
+    } catch (error: any) {
+      res.status(500).json({
+        success: false,
+        error:
+          "Erro ao enviar e-mail, verifique o e-mail informado e tente novamente",
+      });
+    }
+  }
+
+  async validadeToken(req: Request, res: Response) {
+    try {
+      const { token } = req.body;
+      const success = await this.service.validadeToken(token);
+      if (!success) {
+        return res
+          .status(404)
+          .json({ success: false, error: "Token inválido ou expirado" });
+      }
+      res.status(200).json({ success: true, message: "Token valido" });
+    } catch (error: any) {
+      res.status(500).json({ success: false, error: "Erro ao validar token" });
+    }
+  }
+
+  async userData(req: Request, res: Response) {
+    try {
+      const { id: userId } = (req as any).user as { id: string };
+      const user = await this.service.userData(userId);
+      if (!user) {
+        return res
+          .status(404)
+          .json({ success: false, error: "Usuário não encontrado" });
+      }
+
+      res.status(200).json({ success: true, data: user });
+    } catch (error: any) {
+      res.status(500).json({ success: false, error: "Erro ao validar token" });
+    }
+  }
 }

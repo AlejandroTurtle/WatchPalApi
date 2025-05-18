@@ -10,11 +10,13 @@ import { ProjetoController } from "./controllers/Projeto.Controller";
 import { InMemoryProjetoRepository } from "./repository/InMemoryProjetoRepository";
 import { projetoRoutes } from "./routes/projeto.route";
 import { PrismaUserRepository } from "./repository/prisma.User.Repository";
+import { PrismaPasswordResetRepository } from "./repository/prismaPasswordResetRepository";
 
 async function bootstrap(): Promise<void> {
   // const repo = new InMemoryUserRepository();
   const repo = new PrismaUserRepository();
-  const service = new UserService(repo);
+  const resetRepo = new PrismaPasswordResetRepository();
+  const service = new UserService(repo, resetRepo);
   const controller = new UserController(service);
 
   const projetoRepo = new InMemoryProjetoRepository();
