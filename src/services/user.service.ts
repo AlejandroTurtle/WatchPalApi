@@ -3,9 +3,10 @@ import { v4 as uuidv4 } from "uuid";
 import bcrypt from "bcrypt";
 import jwt, { JwtPayload } from "jsonwebtoken";
 import dotenv from "dotenv";
-import { User } from "@prisma/client";
+import { Favorite, User } from "@prisma/client";
 import { smtp } from "../config/smtp";
 import { PrismaPasswordResetRepository } from "../repository/prismaPasswordResetRepository";
+import { PrismaMediaRepository } from "../repository/prismaMediaRepository";
 
 dotenv.config();
 
@@ -202,16 +203,22 @@ export default class UserService {
         return null;
       }
 
-      const dataUser: Partial<User> = {
+      const userFavorites = await this.repo.findFavoritesByUserId(userId);
+
+      const dataUser: Partial<User> & { favorites: { tituloId: number }[] } = {
         id: user.id,
         nome: user.nome,
         email: user.email,
         celular: user.celular,
         foto: user.foto,
+        favorites: userFavorites.map((favorite) => ({
+          tituloId: favorite.tituloId,
+        })),
       };
 
       return dataUser;
     } catch (error) {
+      console.error("Erro ao buscar dados do usuário:", error);
       return null;
     }
   }

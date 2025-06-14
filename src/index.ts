@@ -11,6 +11,7 @@ import { InMemoryProjetoRepository } from "./repository/InMemoryProjetoRepositor
 import { projetoRoutes } from "./routes/projeto.route";
 import { PrismaUserRepository } from "./repository/prisma.User.Repository";
 import { PrismaPasswordResetRepository } from "./repository/prismaPasswordResetRepository";
+import mediaRoutes from "./routes/media.routes";
 
 async function bootstrap(): Promise<void> {
   // const repo = new InMemoryUserRepository();
@@ -28,8 +29,8 @@ async function bootstrap(): Promise<void> {
   app.use(bodyParser.json());
 
   app.use("/usuarios", userRoutes(controller));
-
   app.use("/projetos", projetoRoutes(projetoController));
+  app.use("/media", mediaRoutes);
 
   app.use(errorHandler);
 

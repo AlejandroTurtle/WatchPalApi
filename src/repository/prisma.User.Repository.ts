@@ -1,4 +1,4 @@
-import { PrismaClient, User } from "@prisma/client";
+import { Favorite, PrismaClient, User } from "@prisma/client";
 import { BaseRepository } from "./generic.repository";
 
 const prisma = new PrismaClient();
@@ -31,5 +31,11 @@ export class PrismaUserRepository implements BaseRepository<User> {
 
   async findByEmail(email: string): Promise<User | null> {
     return prisma.user.findUnique({ where: { email } });
+  }
+
+  async findFavoritesByUserId(userId: string): Promise<Favorite[]> {
+    return prisma.favorite.findMany({
+      where: { userId },
+    });
   }
 }

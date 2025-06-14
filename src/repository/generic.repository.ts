@@ -1,3 +1,5 @@
+import { Favorite } from "@prisma/client";
+
 export interface BaseRepository<T> {
   create(item: T): Promise<T>;
   findAll(): Promise<T[]>;
@@ -6,4 +8,5 @@ export interface BaseRepository<T> {
   delete(id: string): Promise<void>;
   deleteAll(): Promise<boolean>;
   findByEmail(email: string): Promise<T | null>;
+  findFavoritesByUserId(userId: string): Promise<Favorite[]>;
 }
