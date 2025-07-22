@@ -19,14 +19,12 @@ export default class MediaController {
         .json({ success: false, error: "Usuário não autenticado" });
     }
 
-    const { titulo, tituloId, numberEpisodes, numberSeasons } = req.body;
+    const { titulo, tituloId, numberEpisodes, numberSeasons, type } = req.body;
     if (!titulo || !tituloId) {
-      return res
-        .status(400)
-        .json({
-          success: false,
-          error: "Título e ID do título são obrigatórios",
-        });
+      return res.status(400).json({
+        success: false,
+        error: "Título e ID do título são obrigatórios",
+      });
     }
 
     try {
@@ -36,6 +34,7 @@ export default class MediaController {
         tituloId,
         numberEpisodes,
         numberSeasons,
+        type,
       });
       return res.json({
         success: true,
@@ -72,12 +71,10 @@ export default class MediaController {
 
     try {
       await this.service.removeFavorite(userId, parseInt(tituloId));
-      return res
-        .status(200)
-        .json({
-          success: true,
-          data: { message: "Favorito removido com sucesso" },
-        });
+      return res.status(200).json({
+        success: true,
+        data: { message: "Favorito removido com sucesso" },
+      });
     } catch (error: any) {
       const msg =
         error.message === "Favorito não encontrado"
@@ -186,12 +183,10 @@ export default class MediaController {
 
     try {
       await this.service.unmarkSeriesAsCompleted(userId, parseInt(tituloId));
-      return res
-        .status(200)
-        .json({
-          success: true,
-          data: { message: "Série desmarcada como concluída com sucesso" },
-        });
+      return res.status(200).json({
+        success: true,
+        data: { message: "Série desmarcada como concluída com sucesso" },
+      });
     } catch (error: any) {
       const msg =
         error.message === "Série não encontrada nos concluídos"
@@ -243,12 +238,10 @@ export default class MediaController {
       );
       return res.status(200).json({ success: true, data: { isCompleted } });
     } catch (error: any) {
-      return res
-        .status(500)
-        .json({
-          success: false,
-          error: "Erro ao verificar se série está concluída",
-        });
+      return res.status(500).json({
+        success: false,
+        error: "Erro ao verificar se série está concluída",
+      });
     }
   }
 
@@ -312,12 +305,10 @@ export default class MediaController {
         parseInt(season),
         parseInt(episode)
       );
-      return res
-        .status(200)
-        .json({
-          success: true,
-          data: { message: "Episódio desmarcado como assistido com sucesso" },
-        });
+      return res.status(200).json({
+        success: true,
+        data: { message: "Episódio desmarcado como assistido com sucesso" },
+      });
     } catch (error: any) {
       const msg =
         error.message === "Episódio não encontrado nos assistidos"
@@ -371,12 +362,10 @@ export default class MediaController {
       );
       return res.status(200).json({ success: true, data: { isWatched } });
     } catch (error: any) {
-      return res
-        .status(500)
-        .json({
-          success: false,
-          error: "Erro ao verificar se episódio está assistido",
-        });
+      return res.status(500).json({
+        success: false,
+        error: "Erro ao verificar se episódio está assistido",
+      });
     }
   }
 }

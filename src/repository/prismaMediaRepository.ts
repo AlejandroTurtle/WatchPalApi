@@ -15,6 +15,7 @@ export class PrismaMediaRepository {
     tituloId: number;
     numberEpisodes?: number;
     numberSeasons?: number;
+    type?: string;
   }): Promise<Favorite> {
     return prisma.favorite.create({
       data: {
@@ -23,6 +24,7 @@ export class PrismaMediaRepository {
         tituloId: data.tituloId,
         numberEpisodes: data.numberEpisodes,
         numberSeasons: data.numberSeasons,
+        type: data.type,
       },
     });
   }

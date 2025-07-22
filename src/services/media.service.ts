@@ -11,6 +11,7 @@ export default class MediaService {
     tituloId: number;
     numberEpisodes?: number;
     numberSeasons?: number;
+    type?: string;
   }): Promise<Favorite> {
     const existingFavorite =
       await this.repository.findFavoriteByUserIdAndTituloId(
