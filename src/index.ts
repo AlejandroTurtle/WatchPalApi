@@ -3,7 +3,6 @@ import express, { Application, Request, Response, NextFunction } from "express";
 import bodyParser from "body-parser";
 import UserController from "./controllers/user.controller";
 import UserService from "./services/user.service";
-import { InMemoryUserRepository } from "./repository/InMemoryUserRepository";
 import { userRoutes } from "./routes/user.route";
 import ngrok from "@ngrok/ngrok";
 import { ProjetoController } from "./controllers/Projeto.Controller";
