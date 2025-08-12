@@ -34,6 +34,10 @@ async function bootstrap(): Promise<void> {
 
   app.use(errorHandler);
 
+  app.get("/", (req: Request, res: Response) => {
+    res.send("Hello World");
+  });
+
   function errorHandler(
     err: any,
     req: Request,
