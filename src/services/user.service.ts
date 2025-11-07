@@ -7,6 +7,7 @@ import { Favorite, User } from "@prisma/client";
 import { smtp } from "../config/smtp";
 import { PrismaPasswordResetRepository } from "../repository/prismaPasswordResetRepository";
 import { PrismaMediaRepository } from "../repository/prismaMediaRepository";
+import { generateToken } from "../middlewares/auth.middleware";
 
 dotenv.config();
 
@@ -30,11 +31,7 @@ export default class UserService {
     private resetRepo: PrismaPasswordResetRepository
   ) {}
 
-  private generateToken(user: User): string {
-    return jwt.sign({ id: user.id, email: user.email }, JWT_SECRET!, {
-      expiresIn: JWT_EXPIRES_IN,
-    } as jwt.SignOptions);
-  }
+
 
   async login(
     email: string,
@@ -52,7 +49,7 @@ export default class UserService {
       return { user: null, token: "" };
     }
 
-    const token = this.generateToken(user);
+     const token = generateToken(user);
 
     return { user, token };
   }
@@ -84,7 +81,7 @@ export default class UserService {
       foto: data.foto,
     });
 
-    const token = this.generateToken(user);
+    const token = generateToken(user);
     return { user, token };
   }
 
