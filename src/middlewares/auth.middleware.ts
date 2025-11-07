@@ -1,5 +1,6 @@
 import { RequestHandler } from "express";
-import jwt, { JwtPayload } from "jsonwebtoken";
+import * as jwt from "jsonwebtoken";
+import { JwtPayload } from "jsonwebtoken";
 
 const JWT_SECRET = process.env.JWT_SECRET;
 if (!JWT_SECRET) {
@@ -9,12 +10,10 @@ if (!JWT_SECRET) {
 export const generateToken = (user: any): string => {
   const JWT_EXPIRES_IN = process.env.JWT_EXPIRES_IN || "15d";
 
-  // uso do "as string" ou "!" para convencer o TS que não é undefined
-  return jwt.sign(
-    { id: user.id, email: user.email },
-    JWT_SECRET as string,
-    { expiresIn: JWT_EXPIRES_IN }
-  );
+  // use any cast to avoid overload ambiguity in TypeScript declarations
+  return (jwt.sign as any)({ id: user.id, email: user.email }, JWT_SECRET, {
+    expiresIn: JWT_EXPIRES_IN,
+  });
 };
 
 export const authMiddleware: RequestHandler = (req, res, next) => {
@@ -27,8 +26,8 @@ export const authMiddleware: RequestHandler = (req, res, next) => {
   const token = authHeader.split(" ")[1];
 
   try {
-    // tipando o resultado como JwtPayload para usar depois
-    const decoded = jwt.verify(token, JWT_SECRET as string) as JwtPayload;
+    // use any cast to avoid overload ambiguity and then assert JwtPayload
+    const decoded = (jwt.verify as any)(token, JWT_SECRET) as JwtPayload;
     (req as any).user = decoded;
     next();
   } catch (err) {
